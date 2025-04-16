@@ -52,7 +52,7 @@
 
             try {
               const params = new URLSearchParams(qrCodeData.split('?')[1]);
-              const spotId = params.get('spotId');
+              const spotId = params.get('spot');
 
               if (!spotId) {
                 alert("spotId が含まれていません");
