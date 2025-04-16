@@ -32,54 +32,43 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        liff
-          .init({ liffId: "2007108080-jR8JqOgX" }) // LIFF IDを設定
-          .then(() => {
-            document
-              .getElementById("scanQR")
-              .addEventListener("click", function () {
-                if (!liff.isInClient()) {
-                  alert("LINEアプリ内で開いてください");
-                  return;
-                }
+  liff.init({ liffId: "2007108080-jR8JqOgX" }) // ←ここは1つに統一
+    .then(() => {
+      document.getElementById("scanQR").addEventListener("click", function () {
+        if (!liff.isInClient()) {
+          alert("LINEアプリ内で開いてください");
+          return;
+        }
 
-                liff
-                  .scanCodeV2()
-                  .then((result) => {
-                    const qrCodeData = result.value;
-                    const spotId =  qrCodeData.get('spotId');
-                    document.getElementById("result").textContent = qrCodeData;
+        liff.scanCodeV2()
+          .then((result) => {
+            const qrCodeData = result.value;
+            document.getElementById("result").textContent = qrCodeData;
 
-                    if (isValidURL(qrCodeData)) {
-                      const qrField = document.createElement("input");
-                        qrField.type = "hidden";
-                        qrField.name = "spotId";
-                        qrQField.value = spotId;
-                        form.appendChild(qrField);
-                    } else {
-                      alert("無効なQRコードです");
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              });
+            if (isValidURL(qrCodeData)) {
+              const params = new URLSearchParams(qrCodeData.split('?')[1]);
+              const spotId = params.get('spotId');
+
+              const form = document.getElementById("userForm3");
+
+              const qrField = document.createElement("input");
+              qrField.type = "hidden";
+              qrField.name = "spotId";
+              qrField.value = spotId;
+              form.appendChild(qrField);
+            } else {
+              alert("無効なQRコードです");
+            }
           })
           .catch((err) => {
-            console.error("LIFFの初期化に失敗:", err);
+            console.log("QR読み取りエラー:", err);
           });
       });
-
-      
-
-      function isValidURL(url) {
-        try {
-          new URL(url); // URLが有効な場合、エラーなしで通過する
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
+    })
+    .catch((err) => {
+      console.error("LIFF初期化エラー:", err);
+    });
+});
     </script>
     <script>
   liff
@@ -95,25 +84,21 @@
           const userId = profile.userId;
 
           // 各フォームにユーザーIDを追加
-          ["userForm1", "userForm2", "userForm3", "userForm4","userForm5"].forEach(
-            (formId) => {
-              const form = document.getElementById(formId);
-              if (form) {
+          
+            
+              const form = document.getElementById(userForm3);
+             
                 const userIdField = document.createElement("input");
                 userIdField.type = "hidden";
                 userIdField.name = "userId";
                 userIdField.value = userId;
                 form.appendChild(userIdField);
-              }
-            }
-          );
+
 
           // ボタンのテキストを変更
-          document.querySelector(".button1").textContent = "ユーザー登録";
-          document.querySelector(".button2").innerHTML = "スタンプラリー<br>カード";
+        
           document.querySelector(".button3").textContent = "スタンプ獲得";
-          document.querySelector(".button4").textContent = "終了証作成";
-          document.querySelector(".button5").textContent = "お問い合わせ";
+
         } catch (err) {
           console.log("プロフィール取得エラー: ", err);
         }
