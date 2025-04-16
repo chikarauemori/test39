@@ -79,9 +79,7 @@
           });
       });
     })
-    .catch((err) => {
-      console.error("LIFFの初期化に失敗:", err);
-    });
+    
 });
 
 function isValidURL(url) {
@@ -92,7 +90,42 @@ function isValidURL(url) {
     return false;
   }
 }
+
+      document.addEventListener("DOMContentLoaded", function () {
+         if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        try {
+        const profile = await liff.getProfile();
+          const userId = profile.userId;
+
+          // 各フォームにユーザーIDを追加
+      
+              const form = document.getElementById("userForm3");
+            
+                const userIdField = document.createElement("input");
+                userIdField.type = "hidden";
+                userIdField.name = "userId";
+                userIdField.value = userId;
+                form.appendChild(userIdField);
+              }
+            }
+          );
+
+         
+          document.querySelector(".button3").textContent = "スタンプ獲得";
+          
+        } catch (err) {
+          console.log("プロフィール取得エラー: ", err);
+        }
+      }
+    })
+    .catch((err) => {
+      console.log("LIFF初期化エラー:", err);
+    });
     </script>
+
+    
 
 <form onsubmit="disableButton(this)"
 id="userForm3"
