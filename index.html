@@ -32,55 +32,66 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        liff
-          .init({ liffId: "2007108080-jR8JqOgX" }) // LIFF IDを設定
-          .then(() => {
-            document
-              .getElementById("scanQR")
-              .addEventListener("click", function () {
-                if (!liff.isInClient()) {
-                  alert("LINEアプリ内で開いてください");
-                  return;
-                }
+  liff.init({ liffId: "2007108080-jR8JqOgX" })
+    .then(() => {
+      document.getElementById("scanQR").addEventListener("click", function () {
+        if (!liff.isInClient()) {
+          alert("LINEアプリ内で開いてください");
+          return;
+        }
 
-                liff
-                  .scanCodeV2()
-                  .then((result) => {
-                    const qrCodeData = result.value;
-                    document.getElementById("result").textContent = qrCodeData;
-                    const params = new URLSearchParams(qrCodeData.split('?')[1]);
-                    const spotId = params.get('spotId');
+        liff.scanCodeV2()
+          .then((result) => {
+            const qrCodeData = result.value;
+            document.getElementById("result").textContent = qrCodeData;
 
-                    if (isValidURL(qrCodeData)) {
-                      const form = document.getElementById("userForm3");
-              
-                      const spotIdField = document.createElement("input");
-                      spotIdField.type = "hidden";
-                      spotIdField.name = "spotId";
-                      spotIdField.value = spotId;
-                      form.appendChild(spotIdField);
-                      } else {
-                      alert("無効なQRコードです");
-                      }
-                      })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              });
+            if (!isValidURL(qrCodeData)) {
+              alert("無効なQRコードです");
+              return;
+            }
+
+            try {
+              const params = new URLSearchParams(qrCodeData.split('?')[1]);
+              const spotId = params.get('spotId');
+
+              if (!spotId) {
+                alert("spotId が含まれていません");
+                return;
+              }
+
+              const form = document.getElementById("userForm3");
+
+              const spotIdField = document.createElement("input");
+              spotIdField.type = "hidden";
+              spotIdField.name = "spotId";
+              spotIdField.value = spotId;
+              form.appendChild(spotIdField);
+
+              console.log("spotIdを追加しました:", spotId);
+
+            } catch (e) {
+              console.error("QRコードの解析に失敗:", e);
+              alert("QRコードの形式が不正です");
+            }
           })
           .catch((err) => {
-            console.error("LIFFの初期化に失敗:", err);
+            console.log("QRスキャンエラー:", err);
           });
       });
+    })
+    .catch((err) => {
+      console.error("LIFFの初期化に失敗:", err);
+    });
+});
 
-      function isValidURL(url) {
-        try {
-          new URL(url); // URLが有効な場合、エラーなしで通過する
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
+function isValidURL(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
     </script>
 
 <form onsubmit="disableButton(this)"
