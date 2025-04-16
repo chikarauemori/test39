@@ -47,10 +47,15 @@
                   .scanCodeV2()
                   .then((result) => {
                     const qrCodeData = result.value;
+                    const spotId =  qrCodeData.get('spotId');
                     document.getElementById("result").textContent = qrCodeData;
 
                     if (isValidURL(qrCodeData)) {
-                      window.location.href = qrCodeData;
+                      const qrField = document.createElement("input");
+                        qrField.type = "hidden";
+                        qrField.name = "spotId";
+                        qrQField.value = spotId;
+                        form.appendChild(qrField);
                     } else {
                       alert("無効なQRコードです");
                     }
@@ -65,6 +70,8 @@
           });
       });
 
+      
+
       function isValidURL(url) {
         try {
           new URL(url); // URLが有効な場合、エラーなしで通過する
@@ -74,6 +81,56 @@
         }
       }
     </script>
+    <script>
+  liff
+    .init({
+      liffId: "2007154146-Y5jGo0G3",
+    })
+    .then(async () => {
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        try {
+          const profile = await liff.getProfile();
+          const userId = profile.userId;
+
+          // 各フォームにユーザーIDを追加
+          ["userForm1", "userForm2", "userForm3", "userForm4","userForm5"].forEach(
+            (formId) => {
+              const form = document.getElementById(formId);
+              if (form) {
+                const userIdField = document.createElement("input");
+                userIdField.type = "hidden";
+                userIdField.name = "userId";
+                userIdField.value = userId;
+                form.appendChild(userIdField);
+              }
+            }
+          );
+
+          // ボタンのテキストを変更
+          document.querySelector(".button1").textContent = "ユーザー登録";
+          document.querySelector(".button2").innerHTML = "スタンプラリー<br>カード";
+          document.querySelector(".button3").textContent = "スタンプ獲得";
+          document.querySelector(".button4").textContent = "終了証作成";
+          document.querySelector(".button5").textContent = "お問い合わせ";
+        } catch (err) {
+          console.log("プロフィール取得エラー: ", err);
+        }
+      }
+    })
+    .catch((err) => {
+      console.log("LIFF初期化エラー:", err);
+    });
+</script>
+    
+     <form onsubmit="disableButton(this)"
+        id="userForm3"
+        action="https://script.google.com/macros/s/AKfycbw5IIpjvaJrujF8--k2-zx5CacyMmuLgdw0LDqEytoJj87P8Ns0UKHxCnyOabZv7Ft5/exec"
+        method="post"
+        >
+        <button class="button3" type="submit">ログインされていません</button>
+        </form>
 
 
 
